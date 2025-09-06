@@ -109,11 +109,14 @@ export const generatePoseImage = async (poseName: string): Promise<string> => {
 
 export const fetchYouTubeFlows = async (flowName: string): Promise<{ videos: YouTubeVideo[], sources: any[] }> => {
     const prompt = `
-        You are a helpful yoga assistant. 
-        1. Use Google Search to find 3 popular, free, and highly-rated yoga flow videos on YouTube for a "${flowName}" practice.
-        2. From the real search results, extract the video title, channel name, and the correct 11-character YouTube video ID. Do not invent video IDs.
+        You are an expert data verifier and yoga assistant. Your primary goal is to find valid, publicly available YouTube videos.
         
-        Return ONLY a single, minified JSON array of objects. Each object must have "title", "channel", and "videoId" keys.
+        Follow these steps precisely:
+        1.  Use Google Search to find popular, free, highly-rated yoga videos on YouTube for a "${flowName}" practice.
+        2.  From the search results, extract the title, channel, and the 11-character YouTube video ID.
+        3.  **Crucial Verification Step:** Before finalizing, for each video ID you find, perform a new, specific Google Search for "site:youtube.com [the video ID]". If the video is available, you will find a direct link. If it's unavailable, the search will yield no relevant results.
+        4.  **Filter:** Only include videos that you successfully verified in the previous step. Discard any videos that appear to be unavailable or private.
+        5.  **Output:** Return ONLY a single, minified JSON array containing up to 3 verified videos. Each object must have "title", "channel", and "videoId" keys. Do not invent video IDs or details. If you cannot find any verifiable videos, return an empty array [].
     `;
 
     try {
@@ -122,23 +125,26 @@ export const fetchYouTubeFlows = async (flowName: string): Promise<{ videos: You
             contents: prompt,
             config: {
                 tools: [{googleSearch: {}}],
-                thinkingConfig: { thinkingBudget: 0 } // Disables thinking for lower latency.
+                // Omitted thinkingConfig to use the default (enabled) setting for higher quality and complex reasoning.
             },
         });
 
         let jsonText = response.text.trim();
         
-        // The model might sometimes wrap the JSON in markdown or other text. 
-        // This regex attempts to extract just the JSON array.
         const match = jsonText.match(/(\[[\s\S]*\])/);
         if (match && match[0]) {
             jsonText = match[0];
         } else {
-            // If no array is found, the response is likely invalid.
-            throw new Error("Model did not return a valid JSON array.");
+            console.warn("Model did not return a valid JSON array. Assuming no videos were found.");
+            return { videos: [], sources: [] };
         }
 
         const videos: YouTubeVideo[] = JSON.parse(jsonText);
+        if (!Array.isArray(videos)) {
+            console.warn("Parsed JSON is not an array. Assuming no videos were found.");
+            return { videos: [], sources: [] };
+        }
+
         const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks ?? [];
         
         return { videos, sources };
@@ -146,6 +152,9 @@ export const fetchYouTubeFlows = async (flowName: string): Promise<{ videos: You
     } catch (error) {
         console.error("Error fetching YouTube flows with grounding:", error);
         if (error instanceof Error) {
+            if (error.name === 'SyntaxError') {
+                 throw new Error("The AI returned a response in an unexpected format. Please try again.");
+            }
             throw error;
         }
         throw new Error("Failed to get YouTube video recommendations from the AI.");
