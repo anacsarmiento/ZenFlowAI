@@ -1,4 +1,4 @@
-import { GOOGLE_API_KEY, GOOGLE_CLIENT_ID } from '../config';
+import { GOOGLE_CALENDAR_API_KEY, GOOGLE_CLIENT_ID } from '../config';
 
 // This service handles all interactions with the Google Calendar API.
 
@@ -18,40 +18,45 @@ export const initGoogleClient = (
     updateSigninStatus: (isSignedIn: boolean) => void,
     updateError: (errorMsg: string) => void
 ) => {
-    if (!GOOGLE_API_KEY || !GOOGLE_CLIENT_ID) {
-        const errorMessage = "Your Google API Key or Client ID is not set. Please add GOOGLE_API_KEY and GOOGLE_CLIENT_ID to your environment variables.";
+    if (!GOOGLE_CALENDAR_API_KEY || GOOGLE_CALENDAR_API_KEY === "PASTE_YOUR_GOOGLE_API_KEY_HERE" || !GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === "PASTE_YOUR_GOOGLE_CLIENT_ID_HERE") {
+        const errorMessage = "Your Google Calendar API Key or Client ID is not set. Please update them in the config.ts file.";
         console.error(errorMessage);
         updateError(errorMessage);
         return;
     }
 
     gapi.load('client', async () => {
-        await gapi.client.init({
-            apiKey: GOOGLE_API_KEY,
-            discoveryDocs: DISCOVERY_DOCS,
-        });
+        try {
+            await gapi.client.init({
+                apiKey: GOOGLE_CALENDAR_API_KEY,
+                discoveryDocs: DISCOVERY_DOCS,
+            });
 
-        tokenClient = google.accounts.oauth2.initTokenClient({
-            client_id: GOOGLE_CLIENT_ID,
-            scope: SCOPES,
-            callback: (tokenResponse: any) => {
-                // This callback is triggered after user grants consent
-                if (tokenResponse && tokenResponse.access_token) {
-                    gapi.client.setToken(tokenResponse);
-                    updateSigninStatus(true);
-                } else {
-                    console.error('No access token received.');
-                    updateSigninStatus(false);
-                }
-            },
-        });
-        
-        // Check initial sign-in state
-        // A simple check if there is an access token. A robust app might check token expiry.
-        if (gapi.client.getToken() !== null) {
-            updateSigninStatus(true);
-        } else {
-            updateSigninStatus(false);
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: GOOGLE_CLIENT_ID,
+                scope: SCOPES,
+                callback: (tokenResponse: any) => {
+                    // This callback is triggered after user grants consent
+                    if (tokenResponse && tokenResponse.access_token) {
+                        gapi.client.setToken(tokenResponse);
+                        updateSigninStatus(true);
+                    } else {
+                        console.error('No access token received.');
+                        updateSigninStatus(false);
+                    }
+                },
+            });
+            
+            // Check initial sign-in state
+            // A simple check if there is an access token. A robust app might check token expiry.
+            if (gapi.client.getToken() !== null) {
+                updateSigninStatus(true);
+            } else {
+                updateSigninStatus(false);
+            }
+        } catch (error) {
+            console.error("Error initializing Google Client:", error);
+            updateError("Could not initialize Google Calendar client. Check your API key and network.");
         }
     });
 };

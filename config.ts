@@ -1,7 +1,7 @@
 // This file is reserved for application configuration.
 
-// The Gemini API Key is automatically provided by the environment.
-export const GEMINI_API_KEY = process.env.API_KEY;
+// The Gemini API Key is automatically provided by the environment,
+// and is accessed directly in geminiService.ts via process.env.API_KEY.
 
 // --- ACTION REQUIRED ---
 // Paste your Google Cloud credentials below.
@@ -16,7 +16,7 @@ export const GEMINI_API_KEY = process.env.API_KEY;
  * The API key for Google Cloud services, used here for the Calendar API.
  * Replace the placeholder string with your actual API key.
  */
-export const GOOGLE_API_KEY = "PASTE_YOUR_GOOGLE_API_KEY_HERE";
+export const GOOGLE_CALENDAR_API_KEY = "PASTE_YOUR_GOOGLE_API_KEY_HERE";
 
 /**
  * The OAuth 2.0 Client ID for authenticating users with their Google account.
