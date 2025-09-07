@@ -109,14 +109,17 @@ export const generatePoseImage = async (poseName: string): Promise<string> => {
 
 export const fetchYouTubeFlows = async (flowName: string): Promise<{ videos: YouTubeVideo[], sources: any[] }> => {
     const prompt = `
-        You are an expert data verifier and yoga assistant. Your primary goal is to find valid, publicly available YouTube videos.
-        
+        You are a meticulous research assistant and yoga content curator. Your primary goal is to find a single, recent, and **verifiably active** YouTube video for a specific yoga flow. You must be extremely diligent to avoid recommending broken or unavailable links.
+
         Follow these steps precisely:
-        1.  Use Google Search to find popular, free, highly-rated yoga videos on YouTube for a "${flowName}" practice.
-        2.  From the search results, extract the title, channel, and the 11-character YouTube video ID.
-        3.  **Crucial Verification Step:** Before finalizing, for each video ID you find, perform a new, specific Google Search for "site:youtube.com [the video ID]". If the video is available, you will find a direct link. If it's unavailable, the search will yield no relevant results.
-        4.  **Filter:** Only include videos that you successfully verified in the previous step. Discard any videos that appear to be unavailable or private.
-        5.  **Output:** Return ONLY a single, minified JSON array containing up to 3 verified videos. Each object must have "title", "channel", and "videoId" keys. Do not invent video IDs or details. If you cannot find any verifiable videos, return an empty array [].
+        1.  **Prioritize Recency:** Your highest priority is finding a video uploaded in the last 2 years. Modify your initial Google Search query for "${flowName}" to include recent years (e.g., "${flowName} yoga 2024" or "${flowName} yoga class 2023"). Recent videos are far more likely to be active.
+        2.  **Initial Selection:** From the search results, identify a promising video. Extract its title, channel name, and the 11-character YouTube video ID.
+        3.  **Crucial Verification - The Most Important Step:** You MUST verify the video is still active. Perform a new, targeted Google search using the exact query: "site:youtube.com watch?v=[the video ID]".
+        4.  **Analyze Verification Snippets:** Scrutinize the short text snippets that appear under the search result links. The mere existence of a link is **NOT** sufficient proof of availability.
+            - **INVALID if:** The snippet contains ANY of these phrases: "This video isn't available anymore", "This video is unavailable", "This video is private", "Video deleted", "Video removed by the user".
+            - **VALID if:** The snippet shows a normal description of the video content.
+        5.  **Decision:** If you see any warning text in the verification search, you MUST DISCARD the video immediately and go back to step 1 to find a different one. Do not take risks. If you have any doubt, discard it.
+        6.  **Output:** Once you have found a video that passes this rigorous verification, return ONLY a single, minified JSON array containing exactly ONE video object. The object must have "title", "channel", and "videoId" keys. If you cannot find a single verifiable video after several attempts, return an empty array []. Do not add any explanatory text before or after the JSON array.
     `;
 
     try {
