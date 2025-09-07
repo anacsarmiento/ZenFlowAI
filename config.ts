@@ -16,10 +16,10 @@
  * The API key for Google Cloud services, used here for the Calendar API.
  * Replace the placeholder string with your actual API key.
  */
-export const GOOGLE_CALENDAR_API_KEY = "PASTE_YOUR_GOOGLE_API_KEY_HERE";
+export const GOOGLE_CALENDAR_API_KEY = "AIzaSyBdffd3JqUwvOVOEdTwocx3xCWCQvwA8qQ"; "AIzaSyBIZ3J86-UmqTM1EPkZxwcwKToJLH2pG_Y"; "AIzaSyAZjkzOTu9LeWjPRP9chEbwPHxGaR5QcGo"; "AIzaSyACHb21z8aLYju9Ja0lUAJ3T2NRZahzoGM"
 
 /**
  * The OAuth 2.0 Client ID for authenticating users with their Google account.
  * Replace the placeholder string with your actual Client ID.
  */
-export const GOOGLE_CLIENT_ID = "PASTE_YOUR_GOOGLE_CLIENT_ID_HERE";
+export const GOOGLE_CLIENT_ID = "952887853542-dgqus260648vu14n68uti8k6ojilrkth.apps.googleusercontent.com";
