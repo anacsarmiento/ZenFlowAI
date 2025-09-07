@@ -1,14 +1,16 @@
 import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { YogaRecommendation, YouTubeVideo } from '../types';
+import { GEMINI_API_KEY } from '../config';
 
 // Lazy-initialized AI client to ensure the API key is checked before use.
 let ai: GoogleGenAI;
 
 function getAiClient(): GoogleGenAI {
   if (!ai) {
-    // FIX: Switched to using `process.env.API_KEY` for the Gemini API key as per coding guidelines.
-    // The key is assumed to be pre-configured in the application's environment.
-    ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+    if (!GEMINI_API_KEY) {
+      throw new Error("Gemini API key is not configured. Please set the API_KEY environment variable.");
+    }
+    ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
   }
   return ai;
 }

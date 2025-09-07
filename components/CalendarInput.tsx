@@ -1,10 +1,18 @@
 import React from 'react';
+import GoogleCalendarManager from './GoogleCalendarManager';
 
 interface CalendarInputProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onSubmit: () => void;
   isLoading: boolean;
+  // Google Calendar props
+  isSignedIn: boolean;
+  isSyncing: boolean;
+  gcalError: string;
+  onSignIn: () => void;
+  onSignOut: () => void;
+  onSync: () => void;
 }
 
 const Instructions: React.FC = () => (
@@ -31,15 +39,32 @@ const Instructions: React.FC = () => (
 );
 
 const CalendarInput: React.FC<CalendarInputProps> = ({ 
-  value, onChange, onSubmit, isLoading
+  value, onChange, onSubmit, isLoading,
+  isSignedIn, isSyncing, gcalError, onSignIn, onSignOut, onSync
 }) => {
   return (
     <div className="bg-[var(--primary-800)] p-6 rounded-xl shadow-inner">
       <h2 className="text-lg font-semibold text-white mb-2 text-center">
-        1. Paste Your Day's Schedule
+        1. Input Your Day's Schedule
       </h2>
       
       <div className="flex flex-col space-y-4">
+
+        <GoogleCalendarManager
+            isSignedIn={isSignedIn}
+            isSyncing={isSyncing}
+            error={gcalError}
+            onSignIn={onSignIn}
+            onSignOut={onSignOut}
+            onSync={onSync}
+        />
+
+        <div className="flex items-center text-xs text-white/50">
+            <div className="flex-grow border-t border-white/20"></div>
+            <span className="flex-shrink mx-4">OR PASTE MANUALLY</span>
+            <div className="flex-grow border-t border-white/20"></div>
+        </div>
+
         <textarea
           id="calendar-input"
           value={value}

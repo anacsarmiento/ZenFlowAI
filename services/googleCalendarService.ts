@@ -1,8 +1,6 @@
 import { GOOGLE_API_KEY, GOOGLE_CLIENT_ID } from '../config';
 
 // This service handles all interactions with the Google Calendar API.
-const API_KEY = GOOGLE_API_KEY;
-const CLIENT_ID = GOOGLE_CLIENT_ID;
 
 const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
 const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
@@ -20,8 +18,8 @@ export const initGoogleClient = (
     updateSigninStatus: (isSignedIn: boolean) => void,
     updateError: (errorMsg: string) => void
 ) => {
-    if (!API_KEY || !CLIENT_ID || API_KEY.startsWith("PASTE_") || CLIENT_ID.startsWith("PASTE_")) {
-        const errorMessage = "Your Google API Key or Client ID is not set. Please follow the instructions in 'config.ts' to enable calendar sync.";
+    if (!GOOGLE_API_KEY || !GOOGLE_CLIENT_ID) {
+        const errorMessage = "Your Google API Key or Client ID is not set. Please add GOOGLE_API_KEY and GOOGLE_CLIENT_ID to your environment variables.";
         console.error(errorMessage);
         updateError(errorMessage);
         return;
@@ -29,12 +27,12 @@ export const initGoogleClient = (
 
     gapi.load('client', async () => {
         await gapi.client.init({
-            apiKey: API_KEY,
+            apiKey: GOOGLE_API_KEY,
             discoveryDocs: DISCOVERY_DOCS,
         });
 
         tokenClient = google.accounts.oauth2.initTokenClient({
-            client_id: CLIENT_ID,
+            client_id: GOOGLE_CLIENT_ID,
             scope: SCOPES,
             callback: (tokenResponse: any) => {
                 // This callback is triggered after user grants consent

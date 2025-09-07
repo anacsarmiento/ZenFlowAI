@@ -1,8 +1,25 @@
 // This file is reserved for application configuration.
-// The Gemini API key is managed via the `process.env.API_KEY` environment variable.
 
-// FIX: Exported Google API credentials to make this file a module and resolve import errors.
-// IMPORTANT: Replace with your actual Google Cloud project credentials.
-// Follow the setup instructions in the project's README.md to obtain these.
-export const GOOGLE_API_KEY = "AIzaSyBdffd3JqUwvOVOEdTwocx3xCWCQvwA8qQ"; "AIzaSyBIZ3J86-UmqTM1EPkZxwcwKToJLH2pG_Y"; "AIzaSyAZjkzOTu9LeWjPRP9chEbwPHxGaR5QcGo"; "AIzaSyACHb21z8aLYju9Ja0lUAJ3T2NRZahzoGM"
-export const GOOGLE_CLIENT_ID = "952887853542-dgqus260648vu14n68uti8k6ojilrkth.apps.googleusercontent.com";
+// The Gemini API Key is automatically provided by the environment.
+export const GEMINI_API_KEY = process.env.API_KEY;
+
+// --- ACTION REQUIRED ---
+// Paste your Google Cloud credentials below.
+// You need to create these in your own Google Cloud project.
+// 1. Get an API Key: https://developers.google.com/workspace/guides/create-credentials#api-key
+// 2. Get an OAuth Client ID: https://developers.google.com/workspace/guides/create-credentials#oauth-client-id
+//
+// IMPORTANT: When creating the OAuth Client ID, you MUST add the URL of this web app
+// to the "Authorized JavaScript origins" section.
+
+/**
+ * The API key for Google Cloud services, used here for the Calendar API.
+ * Replace the placeholder string with your actual API key.
+ */
+export const GOOGLE_API_KEY = "PASTE_YOUR_GOOGLE_API_KEY_HERE";
+
+/**
+ * The OAuth 2.0 Client ID for authenticating users with their Google account.
+ * Replace the placeholder string with your actual Client ID.
+ */
+export const GOOGLE_CLIENT_ID = "PASTE_YOUR_GOOGLE_CLIENT_ID_HERE";
